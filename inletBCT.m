@@ -47,7 +47,6 @@ figure(1)
 hold on
 scatter3(wall(1,5),wall(1,6),wall(1,7),'filled','MarkerFaceColor','g')
 scatter3(wall(i(end),5),wall(i(end),6),wall(i(end),7),'filled','MarkerFaceColor','r')
-scatter3(wall(i(end-1),5),wall(i(end-1),6),wall(i(end-1),7),'filled','MarkerFaceColor','r')
 line([wall(1,5),wall(i(end),5)],[wall(1,6),wall(i(end),6)],[wall(1,7),wall(i(end),7)])
 
 % approximating a center point for the inlet cross-section
@@ -57,10 +56,16 @@ figure(1)
 hold on
 scatter3(ctr(1),ctr(2),ctr(3),'xk')
 
-
-c = cross(wall(1,5:7)-wall(i(end),5:7),wall(1,5:7)-wall(i(end-1),5:7));
-c = c/norm(c);
+% normal vector to the inlet cross-section
+n = cross(wall(1,5:7)-wall(i(end),5:7),wall(1,5:7)-wall(i(end-1),5:7));
+n = n/norm(n);
 
 figure(1)
 hold on
-quiver3(ctr(1),ctr(2),ctr(3),c(1),c(2),c(3));
+quiver3(ctr(1),ctr(2),ctr(3),n(1),n(2),n(3));
+
+%%
+
+Tz = [cosd(ang) -sind(ang) 0 ...
+    sind(ang) cosd(ang) 0 ...
+    0 0 1];
