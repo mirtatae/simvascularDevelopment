@@ -20,6 +20,18 @@ close all
 %% switches
 plotOn = 1;
 
+%% parameter definition
+mu = 0.004;             % fluid viscosity [use consistent units with other 
+                        % parameters]
+catCtr = [0.2,0.4];     % catheter center
+catR = 1;               % catheter radius
+nl = 201;               % number of time points (entered as "Point Number"
+                        % in the "Set Inlet/Outlet BCs>BC Type: Prescribed 
+                        % Velocities" in the SimVascular software)
+period = 1;             % one period duration (entered as "Period" in the
+                        % "Set Inlet/Outlet BCs>BC Type: Prescribed 
+                        % Velocities" in the SimVascular software)
+
 %% setting the directory
 directory = 'E:\Project A\SimvascularDevelopment\simvascularDevelopment\example\';
 
@@ -46,8 +58,10 @@ cwTy(ang) = [cosd(ang) 0 -sind(ang); ...
 filename = 'flowrate.csv';
 flowData = xlsread([directory,filename]);
 
-time = flowData(:,1);
-flowrate = flowData(:,2);
+time = 0:period/(nl-1):period;  % time vector
+
+% interpolated flowrate
+flowrate = interp1(flowData(:,1),flowData(:,2),time);
 
 %% reading the inlet mesh geometry data
 filename = 'inlet_coordinates.csv';
@@ -122,6 +136,10 @@ scatter3(newInlet(1,:),newInlet(2,:),newInlet(3,:),'*k')
 view(2)
 axis equal
 
+
+newWallR = sqrt(newWall(1,:).^2 + newWall(2,:).^2);
+vesR = max(newWallR);
+% vesR = mean(newWallR);
 %%
 
 theta = atan2d(newWall(2,:),newWall(1,:));
@@ -134,21 +152,25 @@ end
 [thetaSort,iW] = sort(theta);
 newWallSort = newWall(:,iW);
 
-catCtr = [0.2,0.4];
+
 
 figure(3)
 subplot(1,2,2)
 line([newWallSort(1,:),newWallSort(1,1)],[newWallSort(2,:),newWallSort(2,1)],'Color','k','LineWidth',1)
-catheter(catCtr(1),catCtr(2),1);
+catheter(catCtr(1),catCtr(2),catR);
 axis equal
 hold on
 scatter(0,0,'xk')
 scatter(catCtr(1),catCtr(2),'xb')
 
-
+%%
+v = velEccCylinders(x,y,rv,rc,mu,q);
 
 %% functions
 function h = catheter(x,y,r)
+% This function plots the catheter with a radius of r centered at (x,y).
+
+% Body
 hold on
 th = 0:pi/50:2*pi;
 xunit = r * cos(th) + x;
@@ -157,11 +179,27 @@ h = plot(xunit, yunit);
 hold off
 end
 
-function v = vel(x,y)
-% The velocity profile is calculated based on the calculations provided in
-% the following reference:
+function v = velEccCylinders(x,y,rv,rc,mu,q)
+% This function calculates the velocity profile between two eccentric
+% cylinders based on the exact solution provided in:
 % DOI: 10.1002/aic.690110319
+%
+% inputs:
+%
+% outputs:
+%
+%
+% Author: Amirtaha Taebi
+% University of California Davis
+% Summer 2020
+%
+% Reference
+% Please cite the following manuscript:
+%
+%
 
+% Body
+% parameter definition
 etta = 0.5 * log((y^2+(x+c)^2)/(y^2+(x-c)^2));
 xi = atan(2*y*c/(x^2+y^2+c^2));
 
@@ -176,21 +214,24 @@ E = (coth(alpha)-coth(beta))/(2*(alpha-beta));
 
 syms n
 s1 = symsum((((coth(alpha)-coth(beta))/(exp(2*n*alpha)-exp(2*n*beta))) * exp(n*etta) + ...
-    (((exp(2*n*alpha)*coth(beta)-exp(2*n*beta)*coth(alpha))/(exp(2*n*alpha)-exp(2*n*beta))) - coth(etta)) * exp(-n*etta)) * ...
+    (((exp(2*n*alpha)*coth(beta)-exp(2*n*beta)*coth(alpha))/(exp(2*n*alpha)-exp(2*n*beta))) - ...
+    coth(etta)) * exp(-n*etta)) * ...
     cos(n*xi), n, 1, Inf);
 
 % non-dimensional velocity
 u = F + E*etta - 0.5*coth(etta) + s1;
 
-% dimensional velocity
+
 f = (rv^2-rc^2+ecc^2)/(2*ecc);
 M = sqrt(f^2-rv^2);
 
 s2 = symsum((n*exp(-n*(alpha+beta)))/(sinh(n*alpha-n*beta)), ...
     n, 1, Inf);
 
+% pressure gradient
 delP = (8*mu*q/pi) / (rv^4-rc^4-((4*ecc^2*M^2)/(alpha-beta))-8*ecc^2*M^2*s2);
 
+% dimensional velocity
 v = u * c^2 * delP / mu;
 
 end
