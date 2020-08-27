@@ -118,24 +118,26 @@ newWall = double(cwTy(beta))*double(cwTz(gama))*(wall(:,5:7)'-ctr');
 % newInlet = (inlet(:,5:7)'-ctr');
 newInlet = double(cwTy(beta))*double(cwTz(gama))*(inlet(:,5:7)'-ctr');
 
-figure(2)
-scatter3(newWall(1,:),newWall(2,:),newWall(3,:))
-hold on
-scatter3(newInlet(1,:),newInlet(2,:),newInlet(3,:),'*k')
-
+if plotOn == 1
+    figure(2)
+    scatter3(newWall(1,:),newWall(2,:),newWall(3,:))
+    hold on
+    scatter3(newInlet(1,:),newInlet(2,:),newInlet(3,:),'*k')
+end
 
 % force-projecting all the z values to zero
 newWall(3,:) = 0;
 newInlet(3,:) = 0;
 
-figure(3)
-subplot(1,2,1)
-scatter3(newWall(1,:),newWall(2,:),newWall(3,:))
-hold on
-scatter3(newInlet(1,:),newInlet(2,:),newInlet(3,:),'*k')
-view(2)
-axis equal
-
+if plotOn == 1
+    figure(3)
+    subplot(1,2,1)
+    scatter3(newWall(1,:),newWall(2,:),newWall(3,:))
+    hold on
+    scatter3(newInlet(1,:),newInlet(2,:),newInlet(3,:),'*k')
+    view(2)
+    axis equal
+end
 
 newWallR = sqrt(newWall(1,:).^2 + newWall(2,:).^2);
 vesR = max(newWallR);
@@ -164,8 +166,13 @@ newWallSort = newWall(:,iW);
 % testP = newInlet(1:2,1);
 testP = [11.32024 1.26649];
 
-% TODO: find the inlet points inside and outside the catheter
+% finding the inlet points inside and outside the catheter
+k = find(abs(sqrt((newInlet(1,:)-catCtr).^2+(newInlet(2,:)).^2))>catR);
+inletOutCat = newInlet(:,k);
+inletInCat = newInlet;
+inletInCat(:,k) = [];
 
+if plotOn == 1
 figure(3)
 subplot(1,2,2)
 line([newWallSort(1,:),newWallSort(1,1)],[newWallSort(2,:),newWallSort(2,1)],'Color','k','LineWidth',1)
@@ -175,6 +182,9 @@ hold on
 scatter(vesCtr,0,'xk')
 scatter(catCtr,0,'xb')
 scatter(testP(1),testP(2),'xr')
+scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'*k')
+scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'.g')
+end
 
 %% saving bct.dat file for simvascular simulation
 
