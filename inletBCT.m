@@ -32,9 +32,6 @@ period = 1;             % one period duration (entered as "Period" in the
                         % "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
 
-%% setting the directory
-directory = 'E:\Project A\SimvascularDevelopment\simvascularDevelopment\example\';
-
 %% rotation matrices
 syms ang integer
 
@@ -53,6 +50,9 @@ cwTz(ang) = [cosd(ang) sind(ang) 0; ...
 cwTy(ang) = [cosd(ang) 0 -sind(ang); ...
     0 1 0; ...
     sind(ang) 0 cosd(ang)];
+
+%% setting the directory
+directory = 'E:\Project A\SimvascularDevelopment\simvascularDevelopment\example\';
 
 %% reading flowrate data
 filename = 'flowrate.csv';
@@ -155,16 +155,19 @@ for i = 1:length(newWall)
     end
 end
 
+% finding the catheter and vessel center for the bipolar transformation
 [vesCtr,catCtr,c,alfa,betta] = centers(catR,vesR,ecc);
 
+% translating the points using the vessel center point
 newWall = newWall + [vesCtr;0;0];
 newInlet = newInlet + [vesCtr;0;0];
 
+% sorting the wall points based on their angle
 [thetaSort,iW] = sort(theta);
 newWallSort = newWall(:,iW);
 
 % testP = newInlet(1:2,1);
-testP = [11.32024 1.26649];
+testP = [8.786 1.058];
 
 % finding the inlet points inside and outside the catheter
 k = find(abs(sqrt((newInlet(1,:)-catCtr).^2+(newInlet(2,:)).^2))>catR);
@@ -181,17 +184,18 @@ if plotOn == 1
     hold on
     scatter(vesCtr,0,'xk')
     scatter(catCtr,0,'xb')
-    scatter(testP(1),testP(2),'xr')
     scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'*k')
     scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'.g')
+    scatter(testP(1),testP(2),'or')
+    catheter(vesCtr,0,vesR)
 end
+
+%% velocity profile
+v = velEccCylinders(testP(1),testP(2),vesR,catR,mu,flowrate(100),c,alfa,betta,ecc);
+disp(['velocity = ',sprintf('%0.2f',v),' mm/s']);
 
 %% saving bct.dat file for simvascular simulation
 
-
-%%
-v = velEccCylinders(testP(1),testP(2),vesR,catR,mu,flowrate(100),c,alfa,betta,ecc);
-disp(['velocity = ',sprintf('%0.2f',v),' mm/s']);
 
 %% functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function h = catheter(x,y,r)
