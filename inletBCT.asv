@@ -162,7 +162,9 @@ newInlet = newInlet + [vesCtr;0;0];
 newWallSort = newWall(:,iW);
 
 % testP = newInlet(1:2,1);
-testP = [12.5 0];
+testP = [11.32024 1.26649];
+
+% TODO: find the inlet points inside and outside the catheter
 
 figure(3)
 subplot(1,2,2)
@@ -174,12 +176,14 @@ scatter(vesCtr,0,'xk')
 scatter(catCtr,0,'xb')
 scatter(testP(1),testP(2),'xr')
 
+%% saving bct.dat file for simvascular simulation
+
 
 %%
 v = velEccCylinders(testP(1),testP(2),vesR,catR,mu,flowrate(100),c,alfa,betta,ecc);
-disp(['velocity = ',sprintf('%0.5f',v),' mm/s']);
+disp(['velocity = ',sprintf('%0.2f',v),' mm/s']);
 
-%% functions
+%% functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function h = catheter(x,y,r)
 % This function plots the catheter with a radius of r centered at (x,y).
 
@@ -193,7 +197,23 @@ hold off
 end
 
 function [cVes,cCat,c,alpha,beta] = centers(rc,rv,ecc)
+% function description
+%
+% inputs:
+%
+% outputs:
+%
+%
+% Author: Amirtaha Taebi
+% University of California Davis
+% Summer 2020
+%
+% Reference
+% Please cite the following manuscript:
+%
+%
 
+% Body
 gama = rc/rv;
 phi = ecc/(rv-rc);
 
