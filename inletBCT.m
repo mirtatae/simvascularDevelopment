@@ -23,9 +23,8 @@ plotOn = 1;
 %% parameter definition
 mu = 0.004;             % fluid viscosity [use consistent units with other 
                         % parameters]
-catCtr = [10.5165,0];       % catheter center
-catR = 1.5;               % catheter radius
-ecc = 0.2; %TODO
+catR = 1.5;             % catheter radius
+ecc = 0.2;              % catheter eccentricity
 nl = 201;               % number of time points (entered as "Point Number"
                         % in the "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
@@ -141,6 +140,10 @@ axis equal
 newWallR = sqrt(newWall(1,:).^2 + newWall(2,:).^2);
 vesR = max(newWallR);
 % vesR = mean(newWallR);
+
+if vesR - catR < ecc
+    error('Eccentricity must be smaller than the difference between vessel radius and catheter radius!')
+end
 %%
 
 theta = atan2d(newWall(2,:),newWall(1,:));
@@ -152,13 +155,13 @@ end
 
 [vesCtr,catCtr,c,alfa,betta] = centers(catR,vesR,ecc);
 
-newWall = newWall + [vesCtr;0;0]; %TODO
-newInlet = newInlet + [vesCtr;0;0]; %TODO
+newWall = newWall + [vesCtr;0;0];
+newInlet = newInlet + [vesCtr;0;0];
 
 [thetaSort,iW] = sort(theta);
 newWallSort = newWall(:,iW);
 
-testP = newInlet(1:2,1);
+% testP = newInlet(1:2,1);
 testP = [12.5 0];
 
 figure(3)
@@ -173,7 +176,8 @@ scatter(testP(1),testP(2),'xr')
 
 
 %%
-v = velEccCylinders(testP(1),testP(2),vesR,catR,mu,flowrate(100),c,alfa,betta,ecc)
+v = velEccCylinders(testP(1),testP(2),vesR,catR,mu,flowrate(100),c,alfa,betta,ecc);
+disp(['velocity = ',sprintf('%0.2f',v),' mm/s']);
 
 %% functions
 function h = catheter(x,y,r)
