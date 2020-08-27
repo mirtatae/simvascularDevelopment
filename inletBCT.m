@@ -23,8 +23,9 @@ plotOn = 1;
 %% parameter definition
 mu = 0.004;             % fluid viscosity [use consistent units with other 
                         % parameters]
-catCtr = [4.2,0];       % catheter center
+catCtr = [10.5165,0];       % catheter center
 catR = 1.5;               % catheter radius
+ecc = 0.2; %TODO
 nl = 201;               % number of time points (entered as "Point Number"
                         % in the "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
@@ -149,28 +150,30 @@ for i = 1:length(newWall)
     end
 end
 
-newWall = newWall + [4;0;0]; %TODO
-newInlet = newInlet + [4;0;0]; %TODO
+[vesCtr,catCtr,c,alfa,betta] = centers(catR,vesR,ecc);
+
+newWall = newWall + [vesCtr;0;0]; %TODO
+newInlet = newInlet + [vesCtr;0;0]; %TODO
 
 [thetaSort,iW] = sort(theta);
 newWallSort = newWall(:,iW);
 
 testP = newInlet(1:2,1);
-% testP = [4 2.1];
+testP = [12.5 0];
 
 figure(3)
 subplot(1,2,2)
 line([newWallSort(1,:),newWallSort(1,1)],[newWallSort(2,:),newWallSort(2,1)],'Color','k','LineWidth',1)
-catheter(catCtr(1),catCtr(2),catR);
+catheter(catCtr,0,catR);
 axis equal
 hold on
-scatter(0,0,'xk')
-scatter(catCtr(1),catCtr(2),'xb')
+scatter(vesCtr,0,'xk')
+scatter(catCtr,0,'xb')
 scatter(testP(1),testP(2),'xr')
 
 
 %%
-v = velEccCylinders(testP(1),testP(2),catCtr,vesR,catR,mu,flowrate(100))
+v = velEccCylinders(testP(1),testP(2),vesR,catR,mu,flowrate(100),c,alfa,betta,ecc)
 
 %% functions
 function h = catheter(x,y,r)
@@ -185,7 +188,21 @@ h = plot(xunit, yunit);
 hold off
 end
 
-function v = velEccCylinders(x,y,catCenter,rv,rc,mu,q)
+function [cVes,cCat,c,alpha,beta] = centers(rc,rv,ecc)
+
+gama = rc/rv;
+phi = ecc/(rv-rc);
+
+alpha = acosh((gama*(1+phi^2)+(1-phi^2))/(2*phi*gama));
+beta = acosh((gama*(1-phi^2)+(1+phi^2))/(2*phi));
+
+c = rc * sinh(alpha);
+
+cCat = c * coth(alpha);
+cVes = c * coth(beta);
+end
+
+function v = velEccCylinders(x,y,rv,rc,mu,q,c,alpha,beta,ecc)
 % This function calculates the velocity profile between two eccentric
 % cylinders based on the exact solution provided in:
 % DOI: 10.1002/aic.690110319
@@ -206,16 +223,7 @@ function v = velEccCylinders(x,y,catCenter,rv,rc,mu,q)
 
 % Body
 % parameter definition
-ecc = norm(catCenter);
-ecc = 0.2; %TODO
 
-gama = rc/rv;
-phi = ecc/(rv-rc);
-
-alpha = acosh((gama*(1+phi^2)+(1-phi^2))/(2*phi*gama));
-beta = acosh((gama*(1-phi^2)+(1+phi^2))/(2*phi));
-
-c = rc * sinh(alpha);
 
 etta = 0.5 * log((y^2+(x+c)^2)/(y^2+(x-c)^2));
 xi = atan(2*y*c/(x^2+y^2-c^2));
