@@ -167,7 +167,12 @@ newInlet = newInlet + [vesCtr;0;0];
 newWallSort = newWall(:,iW);
 
 % testP = newInlet(1:2,1);
-testP = [8.786 1.058];
+testP = [10.59 1.65;...
+    12.58 .5191;...
+    9.405 1.579;...
+    10.69 -1.61;...
+    8.807 -.1692;...
+    12.81 -.077];
 
 % finding the inlet points inside and outside the catheter
 k = find(abs(sqrt((newInlet(1,:)-catCtr).^2+(newInlet(2,:)).^2))>catR);
@@ -187,11 +192,11 @@ if plotOn == 1
     scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'*k')
     scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'.g')
     scatter(testP(1),testP(2),'or')
-    catheter(vesCtr,0,vesR)
+    catheter(vesCtr,0,vesR);
 end
 
 %% velocity profile
-v = velEccCylinders(testP(1),testP(2),vesR,catR,mu,flowrate(100),c,alfa,betta,ecc);
+v = velEccCylinders(testP(:,1),testP(:,2),vesR,catR,mu,flowrate(100),c,alfa,betta,ecc);
 disp(['velocity = ',sprintf('%0.2f',v),' mm/s']);
 
 %% saving bct.dat file for simvascular simulation
@@ -263,8 +268,8 @@ function v = velEccCylinders(x,y,rv,rc,mu,q,c,alpha,beta,ecc)
 % parameter definition
 
 
-etta = 0.5 * log((y^2+(x+c)^2)/(y^2+(x-c)^2));
-xi = atan(2*y*c/(x^2+y^2-c^2));
+etta = 0.5 * log((y.^2+(x+c).^2)./(y.^2+(x-c).^2));
+xi = atan(2*y*c./(x.^2+y.^2-c^2));
 
 
 F = (alpha*coth(beta)-beta*coth(alpha))/(2*(alpha-beta));
@@ -273,7 +278,7 @@ E = (coth(alpha)-coth(beta))/(2*(alpha-beta));
 syms n
 s1 = double(symsum((((coth(alpha)-coth(beta))/(exp(2*n*alpha)-exp(2*n*beta))) * exp(n*etta) + ...
     (((exp(2*n*alpha)*coth(beta)-exp(2*n*beta)*coth(alpha))/(exp(2*n*alpha)-exp(2*n*beta))) - ...
-    coth(etta)) * exp(-n*etta)) * ...
+    coth(etta)) .* exp(-n*etta)) .* ...
     cos(n*xi), n, 1, inf));
 
 % non-dimensional velocity
