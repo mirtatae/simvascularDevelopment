@@ -13,6 +13,10 @@
 %
 %
 
+%% developments
+% TODO: add catheter velocity profile
+% TODO: add catheter wall thickness
+
 %%
 clear
 close all
@@ -70,9 +74,11 @@ data = xlsread([directory,filename]);
 % finding vessel wall nodes and inlet nodes
 ki = find(data(:,2));
 inlet = data(ki,:);
+inletNodeID = inlet(:,1);
 
 kw = find(~data(:,2));
 wall = data(kw,:);
+wallNodeID = wall(:,1);
 
 if plotOn == 1
     figure(1)
@@ -87,7 +93,7 @@ end
 
 % finding the distance between wall nodes
 dist = sqrt(sum((wall(1,5:7) - wall(:,5:7)).^2,2));
-[b,i] = sort(dist);
+[~,i] = sort(dist);
 
 % approximating a center point for the inlet cross-section
 ctr = (wall(1,5:7) + wall(i(end),5:7))/2;
@@ -98,7 +104,6 @@ n = n/norm(n);
 
 gama = atand(n(2)/n(1));
 beta = atand(sqrt(n(1)^2+n(2)^2)/n(3));
-d = sqrt(sum(ctr.^2));
 
 if plotOn == 1
     figure(1)
@@ -113,9 +118,7 @@ end
 
 
 %%
-% newWall = (wall(:,5:7)'-ctr');
 newWall = double(cwTy(beta))*double(cwTz(gama))*(wall(:,5:7)'-ctr');
-% newInlet = (inlet(:,5:7)'-ctr');
 newInlet = double(cwTy(beta))*double(cwTz(gama))*(inlet(:,5:7)'-ctr');
 
 if plotOn == 1
@@ -141,7 +144,6 @@ end
 
 newWallR = sqrt(newWall(1,:).^2 + newWall(2,:).^2);
 vesR = max(newWallR);
-% vesR = mean(newWallR);
 
 if vesR - catR < ecc
     error('Eccentricity must be smaller than the difference between vessel radius and catheter radius!')
@@ -162,23 +164,20 @@ end
 newWall = newWall + [vesCtr;0;0];
 newInlet = newInlet + [vesCtr;0;0];
 
-% sorting the wall points based on their angle
+% sorting the wall points based on their angle (just for plotting)
 [thetaSort,iW] = sort(theta);
 newWallSort = newWall(:,iW);
 
-% testP = newInlet(1:2,1);
-testP = [10.59 1.65;...
-    12.58 .5191;...
-    9.405 1.579;...
-    10.69 -1.61;...
-    8.807 -.1692;...
-    12.81 -.077];
 
 % finding the inlet points inside and outside the catheter
 k = find(abs(sqrt((newInlet(1,:)-catCtr).^2+(newInlet(2,:)).^2))>catR);
 inletOutCat = newInlet(:,k);
 inletInCat = newInlet;
 inletInCat(:,k) = [];
+
+inletOutCatID = inletNodeID(k);
+inletInCatID = inletNodeID;
+inletInCatID(k) = [];
 
 if plotOn == 1
     figure(3)
@@ -191,37 +190,59 @@ if plotOn == 1
     scatter(catCtr,0,'xb')
     scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'*k')
     scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'.g')
-    scatter(testP(1),testP(2),'or')
     catheter(vesCtr,0,vesR);
 end
 
 %% velocity profile
-v = velEccCylinders(testP(:,1),testP(:,2),vesR,catR,mu,flowrate(100),c,alfa,betta,ecc);
-disp(['velocity = ',sprintf('%0.2f',v),' mm/s']);
+% velocity profile outside of the catheter
+v = velEccCylinders(inletOutCat(1,:),inletOutCat(2,:),vesR,catR,mu,flowrate,c,alfa,betta,ecc);
+
+% velocity profile inside the catheter
+
+database = zeros(size(inlet));
+database(:,1) = [inletOutCatID,inletInCatID];
+database(:,2:4) = [inletOutCat';inletInCatID'];
+database(1:length(inletOutCatID),5:7) = 
 
 %% saving bct.dat file for simvascular simulation
 
 
 %% functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function h = catheter(x,y,r)
-% This function plots the catheter with a radius of r centered at (x,y).
+% This function plots a circle (e.g. the catheter) with a radius of r
+% centered at (x,y).
+%
+% inputs:
+%   x,y     center of the circle
+%   r       radius of the circle
 
 % Body
 hold on
-th = 0:pi/50:2*pi;
-xunit = r * cos(th) + x;
-yunit = r * sin(th) + y;
+theta = 0:pi/50:2*pi;
+xunit = r * cos(theta) + x;
+yunit = r * sin(theta) + y;
 h = plot(xunit, yunit);
 hold off
 end
 
 function [cVes,cCat,c,alpha,beta] = centers(rc,rv,ecc)
-% function description
+% This function calculates the center of the vessel and the catheter for
+% correct transformation in the bipolar system.
 %
 % inputs:
+%   rc      radius of catheter
+%   rv      radius of blood vessel
+%   ecc     eccentricity, i.e. distance between the center of catheter and
+%           center of blood vessel
 %
 % outputs:
-%
+%   cVes    center of the blood vessel
+%   cCat    center of the catheter
+%   c       a constant
+%   alpha   line of constant etta in the bipolar system which represents a
+%           circle in the cartesian system
+%   beta    line of constant etta in the bipolar system which represents a
+%           circle in the cartesian system
 %
 % Author: Amirtaha Taebi
 % University of California Davis
@@ -251,8 +272,21 @@ function v = velEccCylinders(x,y,rv,rc,mu,q,c,alpha,beta,ecc)
 % DOI: 10.1002/aic.690110319
 %
 % inputs:
+%   x,y     cartesian cordinates of the points to calculate velocity at
+%   rv      radius of the blood vessel
+%   rc      radius of the catheter
+%   mu      fluid (e.g. blood) viscosity
+%   q       fluid (e.g. blood) flowrate
+%   c       a constant
+%   alpha   line of constant etta in the bipolar system which represents a
+%           circle in the cartesian system
+%   beta    line of constant etta in the bipolar system which represents a
+%           circle in the cartesian system
+%   ecc     eccentricity, i.e. distance between the center of catheter and
+%           center of blood vessel
 %
 % outputs:
+%   v       velocity in z direction at the points specified with x,y
 %
 %
 % Author: Amirtaha Taebi
@@ -295,6 +329,6 @@ s2 = double(symsum((n*exp(-n*(alpha+beta)))/(sinh(n*alpha-n*beta)), ...
 delP = (8*mu*q/pi) / (rv^4-rc^4-((4*ecc^2*M^2)/(alpha-beta))-8*ecc^2*M^2*s2);
 
 % dimensional velocity
-v = u * c^2 * delP / mu;
+v = u' * c^2 * delP / mu;
 
 end
