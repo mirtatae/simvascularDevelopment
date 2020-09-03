@@ -205,6 +205,10 @@ if plotOn == 1
     subplot(1,3,3)
     quiver3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),...
         zeros(1,length(inletOutCat(1,:))),zeros(1,length(inletOutCat(1,:))),v(:,50)')
+    axis equal
+    hold on
+    scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'*k')
+    scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'.g')
 end
 
 vv = zeros(size(inletOutCat,1),size(inletOutCat,2),nl);
