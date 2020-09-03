@@ -98,7 +98,8 @@ dist = sqrt(sum((wall(1,5:7) - wall(:,5:7)).^2,2));
 % approximating a center point for the inlet cross-section
 ctr = (wall(1,5:7) + wall(i(end),5:7))/2;
 
-% normal vector to the inlet cross-section
+% normal vector to the inlet cross-section (in the original coordinate
+% system)
 n = cross(wall(1,5:7)-wall(i(end),5:7),wall(1,5:7)-wall(i(end-1),5:7));
 n = n/norm(n);
 
@@ -120,6 +121,8 @@ end
 %%
 newWall = double(cwTy(beta))*double(cwTz(gama))*(wall(:,5:7)'-ctr');
 newInlet = double(cwTy(beta))*double(cwTz(gama))*(inlet(:,5:7)'-ctr');
+% In this new coordinate system the inlet coss-section is in the XY plane
+% and the axial velocity is in the Z direction.
 
 if plotOn == 1
     figure(2)
@@ -134,7 +137,7 @@ newInlet(3,:) = 0;
 
 if plotOn == 1
     figure(3)
-    subplot(1,2,1)
+    subplot(1,3,1)
     scatter3(newWall(1,:),newWall(2,:),newWall(3,:))
     hold on
     scatter3(newInlet(1,:),newInlet(2,:),newInlet(3,:),'*k')
@@ -181,7 +184,7 @@ inletInCatID(k) = [];
 
 if plotOn == 1
     figure(3)
-    subplot(1,2,2)
+    subplot(1,3,2)
     line([newWallSort(1,:),newWallSort(1,1)],[newWallSort(2,:),newWallSort(2,1)],'Color','k','LineWidth',1)
     catheter(catCtr,0,catR);
     axis equal
@@ -196,6 +199,21 @@ end
 %% velocity profile
 % velocity profile outside of the catheter
 v = velEccCylinders(inletOutCat(1,:),inletOutCat(2,:),vesR,catR,mu,flowrate,c,alfa,betta,ecc);
+
+if plotOn == 1
+    figure(3)
+    subplot(1,3,3)
+    quiver3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),...
+        zeros(1,length(inletOutCat(1,:))),zeros(1,length(inletOutCat(1,:))),v(:,50)')
+end
+
+vv = zeros(size(inletOutCat,1),size(inletOutCat,2),nl);
+% Now, the velocity profile should be rotated to be alighned to the normal
+% vector (n) of the inlet cross-section in the original coordinate system.
+for i = 1:nl
+    vv(:,:,i) = double(ccTz(gama))*double(ccTy(beta))* ...
+        ([inletOutCat(1,:) - vesCtr;inletOutCat(2,:);v(:,i)']);
+end
 
 % velocity profile inside the catheter
 
