@@ -143,7 +143,7 @@ newInlet(3,:) = 0;
 
 if plotOn == 1
     figure(3)
-    subplot(3,2,1)
+    subplot(2,2,1)
     scatter3(newWall(1,:),newWall(2,:),newWall(3,:))
     hold on
     scatter3(newInlet(1,:),newInlet(2,:),newInlet(3,:),'*k')
@@ -192,7 +192,7 @@ inletInCatID(k) = [];
 
 if plotOn == 1
     figure(3)
-    subplot(3,2,2)
+    subplot(2,2,2)
     line([newWallSort(1,:),newWallSort(1,1)],[newWallSort(2,:),newWallSort(2,1)],'Color','k','LineWidth',1)
     catheter(catCtr,0,catR);
     axis equal
@@ -230,7 +230,7 @@ end
 
 if plotOn == 1
     figure(3)
-    subplot(3,2,3)
+    subplot(2,2,3)
     quiver3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),...
         zeros(1,length(inletOutCat(1,:))),zeros(1,length(inletOutCat(1,:))),v(:,50)')
     axis equal
@@ -243,14 +243,22 @@ if plotOn == 1
     zlabel('v [m/s]')
     title('Velocity profile')
     
-    subplot(3,2,4)
+    subplot(2,2,4)
     [xi,yi] = meshgrid(min(newWall(1,:)):0.01:max(newWall(1,:)),...
         min(newWall(2,:)):0.01:max(newWall(2,:)));
     zi = griddata([inletOutCat(1,:),newWall(1,:),inletInCat(1,:)],...
         [inletOutCat(2,:),newWall(2,:),inletInCat(2,:)],...
         [-v(:,50)',vWall(:,50)',vInletInCat(:,50)'],xi,yi);
+    contourf(xi,yi,zi,'k','ShowText','on','LabelSpacing',400)
+    axis equal
+    colormap jet
+    xlabel('x [mm]')
+    ylabel('y [mm]')
+    
+    %{
+    figure
     surf(xi,yi,zi,'EdgeColor','none')
-    colormap(jet(7))
+    colormap jet
     caxis([0 700])
     c = colorbar;
     c.Label.String = 'Velocity [mm/s]';
@@ -259,13 +267,7 @@ if plotOn == 1
     grid off
     xlabel('x [mm]')
     ylabel('y [mm]')
-
-    subplot(3,2,5:6)
-    contourf(xi,yi,zi,'k','ShowText','on','LabelSpacing',400)
-    axis equal
-    colormap jet
-    xlabel('x [mm]')
-    ylabel('y [mm]')
+    %}
     
     figure(1)
     subplot(1,2,2)
