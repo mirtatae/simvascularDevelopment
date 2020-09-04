@@ -23,12 +23,15 @@ close all
 
 %% switches
 plotOn = 1;
-
+vCat = 0;               % defines the type of the velocity profile inside
+                        % the catheter:
+                        % 0: zero velocity
+                        % 1: parabolic profile
 %% parameter definition
 mu = 0.004;             % fluid viscosity [use consistent units with other 
                         % parameters]
-catR = 1.5;             % catheter radius
-ecc = 0.2;              % catheter eccentricity
+catR = 1.0;             % catheter radius
+ecc = 0.8;              % catheter eccentricity
 nl = 201;               % number of time points (entered as "Point Number"
                         % in the "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
@@ -82,10 +85,11 @@ wallNodeID = wall(:,1);
 
 if plotOn == 1
     figure(1)
+    subplot(1,2,1)
     scatter3(wall(:,5),wall(:,6),wall(:,7))
-    xlabel('x')
-    ylabel('y')
-    zlabel('z')
+    xlabel('X [mm]')
+    ylabel('Y [mm]')
+    zlabel('Z [mm]')
 end
 
 %% normal of the inlet plane
@@ -108,6 +112,7 @@ beta = atand(sqrt(n(1)^2+n(2)^2)/n(3));
 
 if plotOn == 1
     figure(1)
+    subplot(1,2,1)
     hold on
     scatter3(wall(1,5),wall(1,6),wall(1,7),'filled','MarkerFaceColor','g')
     scatter3(wall(i(end),5),wall(i(end),6),wall(i(end),7),'filled','MarkerFaceColor','r')
@@ -115,6 +120,7 @@ if plotOn == 1
     scatter3(ctr(1),ctr(2),ctr(3),'xk')
     quiver3(ctr(1),ctr(2),ctr(3),n(1),n(2),n(3));
     scatter3(inlet(:,5),inlet(:,6),inlet(:,7),'*k')
+    axis equal
 end
 
 
@@ -137,12 +143,14 @@ newInlet(3,:) = 0;
 
 if plotOn == 1
     figure(3)
-    subplot(1,3,1)
+    subplot(3,2,1)
     scatter3(newWall(1,:),newWall(2,:),newWall(3,:))
     hold on
     scatter3(newInlet(1,:),newInlet(2,:),newInlet(3,:),'*k')
     view(2)
     axis equal
+    xlabel('x [mm]')
+    ylabel('y [mm]')
 end
 
 newWallR = sqrt(newWall(1,:).^2 + newWall(2,:).^2);
@@ -184,7 +192,7 @@ inletInCatID(k) = [];
 
 if plotOn == 1
     figure(3)
-    subplot(1,3,2)
+    subplot(3,2,2)
     line([newWallSort(1,:),newWallSort(1,1)],[newWallSort(2,:),newWallSort(2,1)],'Color','k','LineWidth',1)
     catheter(catCtr,0,catR);
     axis equal
@@ -194,22 +202,13 @@ if plotOn == 1
     scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'*k')
     scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'.g')
     catheter(vesCtr,0,vesR);
+    title(['Vessel center = ',sprintf('%0.2f',vesCtr)])
+    xlabel('x [mm]')
 end
 
 %% velocity profile
 % velocity profile outside of the catheter
 v = velEccCylinders(inletOutCat(1,:),inletOutCat(2,:),vesR,catR,mu,flowrate,c,alfa,betta,ecc);
-
-if plotOn == 1
-    figure(3)
-    subplot(1,3,3)
-    quiver3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),...
-        zeros(1,length(inletOutCat(1,:))),zeros(1,length(inletOutCat(1,:))),v(:,50)')
-    axis equal
-    hold on
-    scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'*k')
-    scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'.g')
-end
 
 vv = zeros(size(inletOutCat,1),size(inletOutCat,2),nl);
 % Now, the velocity profile should be rotated to be alighned to the normal
@@ -219,14 +218,66 @@ for i = 1:nl
         ([inletOutCat(1,:) - vesCtr;inletOutCat(2,:);v(:,i)']);
 end
 
-% velocity profile inside the catheter
+% zero wall velocity
+vWall = zeros(length(newWall),nl);
 
-%{
-database = zeros(size(inlet));
-database(:,1) = [inletOutCatID,inletInCatID];
-database(:,2:4) = [inletOutCat';inletInCatID'];
-database(1:length(inletOutCatID),5:7) = 
-%}
+% velocity profile inside the catheter
+if vCat == 0
+    vInletInCat = zeros(length(inletInCat),nl);
+elseif vCat == 1
+    
+end
+
+if plotOn == 1
+    figure(3)
+    subplot(3,2,3)
+    quiver3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),...
+        zeros(1,length(inletOutCat(1,:))),zeros(1,length(inletOutCat(1,:))),v(:,50)')
+    axis equal
+    hold on
+    scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'*k')
+    scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'.g')
+    hold off
+    xlabel('x [mm]')
+    ylabel('y [mm]')
+    zlabel('v [m/s]')
+    title('Velocity profile')
+    
+    subplot(3,2,4)
+    [xi,yi] = meshgrid(min(newWall(1,:)):0.01:max(newWall(1,:)),...
+        min(newWall(2,:)):0.01:max(newWall(2,:)));
+    zi = griddata([inletOutCat(1,:),newWall(1,:),inletInCat(1,:)],...
+        [inletOutCat(2,:),newWall(2,:),inletInCat(2,:)],...
+        [-v(:,50)',vWall(:,50)',vInletInCat(:,50)'],xi,yi);
+    surf(xi,yi,zi,'EdgeColor','none')
+    colormap(jet(7))
+    caxis([0 700])
+    c = colorbar;
+    c.Label.String = 'Velocity [mm/s]';
+    view(2)
+    axis equal
+    grid off
+    xlabel('x [mm]')
+    ylabel('y [mm]')
+
+    subplot(3,2,5:6)
+    contourf(xi,yi,zi,'k','ShowText','on','LabelSpacing',400)
+    axis equal
+    colormap jet
+    xlabel('x [mm]')
+    ylabel('y [mm]')
+    
+    figure(1)
+    subplot(1,2,2)
+    scatter3(inlet(k,5),inlet(k,6),inlet(k,7),'*k')
+    hold on
+    quiver3(inlet(k,5),inlet(k,6),inlet(k,7),vv(1,:,50)',vv(2,:,50)',vv(3,:,50)')
+    scatter3(wall(:,5),wall(:,6),wall(:,7))
+    xlabel('X [mm]')
+    ylabel('Y [mm]')
+    zlabel('Z [mm]')
+    axis equal
+end
 
 
 %% saving bct.dat file for simvascular simulation
