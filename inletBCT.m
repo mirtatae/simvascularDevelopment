@@ -283,7 +283,20 @@ end
 
 
 %% saving bct.dat file for simvascular simulation
-
+aaa = {};
+for i = 1:length(inletInCat)
+    temp{1,1} = {[sprintf('%0.6e',inletInCat(1,i)),...
+        sprintf('% 0.6e',inletInCat(2,i)),...
+        sprintf('% 0.6e',inletInCat(3,i)),...
+        ' ',num2str(nl),' ',num2str(inletInCatID(i))]};
+    for j = 1:nl
+        temp{j+1,1} = {[sprintf('%0.6e',vInletInCat(1,i)),...
+        sprintf('% 0.6e',vInletInCat(2,i)),...
+        sprintf('% 0.6e',vInletInCat(3,i)),...
+        sprintf('% 0.6e',time(i))]};
+    end
+    aaa = [aaa;temp];
+end
 
 %% functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function h = catheter(x,y,r)
