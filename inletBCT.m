@@ -298,6 +298,23 @@ for i = 1:length(inletInCat)
     aaa = [aaa;temp];
 end
 
+catCoords = inlet(:,5:7);
+catCoords(k,:) = [];
+temp2 = zeros(nl,4);
+for i = 1:length(catCoords)
+    temp1(1,:) = [catCoords(i,1),catCoords(i,2),catCoords(i,3),...
+        nl, inletInCatID(i)];
+    for j = 1:nl
+        temp2(j,:) = [vInletInCat(1,j),vInletInCat(2,j),vInletInCat(3,j),...
+        time(j)];
+    end
+    row1 = i+(i-1)*nl;
+    dataRange1 = ['A',num2str(row1),':E',num2str(row1)];
+    dataRange2 = ['A',num2str(row1+1),':D',num2str(row1+nl+1)];
+    xlswrite('test.csv',temp1(1,:),dataRange1);
+    xlswrite('test.csv',temp2(1:nl,:),dataRange2);
+end
+
 %% functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function h = catheter(x,y,r)
 % This function plots a circle (e.g. the catheter) with a radius of r
