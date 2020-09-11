@@ -228,6 +228,14 @@ elseif vCat == 1
     
 end
 
+vvInletInCat = zeros(size(inletInCat,1),size(inletInCat,2),nl);
+% Now, the velocity profile should be rotated to be alighned to the normal
+% vector (n) of the inlet cross-section in the original coordinate system.
+for i = 1:nl
+    vvInletInCat(:,:,i) = double(ccTz(gama))*double(ccTy(beta))* ...
+        ([inletInCat(1,:) - vesCtr;inletInCat(2,:);vInletInCat(:,i)']);
+end
+
 if plotOn == 1
     figure(3)
     subplot(2,2,3)
@@ -305,10 +313,25 @@ for i = 1:length(catCoords)
     temp1(1,:) = [catCoords(i,1),catCoords(i,2),catCoords(i,3),...
         nl, inletInCatID(i)];
     for j = 1:nl
-        temp2(j,:) = [vInletInCat(1,j),vInletInCat(2,j),vInletInCat(3,j),...
+        temp2(j,:) = [vvInletInCat(1,i,j),vvInletInCat(2,i,j),vvInletInCat(3,i,j),...
         time(j)];
     end
     row1 = i+(i-1)*nl;
+    dataRange1 = ['A',num2str(row1),':E',num2str(row1)];
+    dataRange2 = ['A',num2str(row1+1),':D',num2str(row1+nl)];
+    xlswrite('test.csv',temp1(1,:),dataRange1);
+    xlswrite('test.csv',temp2(1:nl,:),dataRange2);
+end
+
+outCatCoords = inlet(k,5:7);
+for i = 1:length(outCatCoords)
+    temp1(1,:) = [outCatCoords(i,1),outCatCoords(i,2),outCatCoords(i,3),...
+        nl, inletOutCatID(i)];
+    for j = 1:nl
+        temp2(j,:) = [vv(1,i,j),vv(2,i,j),vv(3,i,j),...
+        time(j)];
+    end
+    row1 = i+(i-1)*nl+(nl+1)*length(catCoords);
     dataRange1 = ['A',num2str(row1),':E',num2str(row1)];
     dataRange2 = ['A',num2str(row1+1),':D',num2str(row1+nl+1)];
     xlswrite('test.csv',temp1(1,:),dataRange1);
