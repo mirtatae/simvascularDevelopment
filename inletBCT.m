@@ -27,6 +27,9 @@ vCat = 0;               % defines the type of the velocity profile inside
                         % the catheter:
                         % 0: zero velocity
                         % 1: parabolic profile
+outputFormat = 0;       % output file format:
+                        % 0: .dat
+                        % 1: .csv
 %% parameter definition
 mu = 0.004;             % fluid viscosity [use consistent units with other 
                         % parameters]
@@ -225,7 +228,7 @@ vWall = zeros(length(newWall),nl);
 if vCat == 0
     vInletInCat = zeros(length(inletInCat),nl);
 elseif vCat == 1
-    
+    % TODO
 end
 
 vvInletInCat = zeros(size(inletInCat,1),size(inletInCat,2),nl);
@@ -291,21 +294,14 @@ end
 
 
 %% saving bct.dat file for simvascular simulation
-aaa = {};
-for i = 1:length(inletInCat)
-    temp{1,1} = {[sprintf('%0.6e',inletInCat(1,i)),...
-        sprintf('% 0.6e',inletInCat(2,i)),...
-        sprintf('% 0.6e',inletInCat(3,i)),...
-        ' ',num2str(nl),' ',num2str(inletInCatID(i))]};
-    for j = 1:nl
-        temp{j+1,1} = {[sprintf('%0.6e',vInletInCat(1,i)),...
-        sprintf('% 0.6e',vInletInCat(2,i)),...
-        sprintf('% 0.6e',vInletInCat(3,i)),...
-        sprintf('% 0.6e',time(i))]};
-    end
-    aaa = [aaa;temp];
+
+if outputFormat == 0
+    dlmwrite('bct.dat',[length(wall)+length(inlet),nl],' ');
+elseif outputFormat == 1
+    xlswrite('bct.csv',[length(wall)+length(inlet),nl],'A1:B1');
 end
 
+% velocity of the nodes inside the catheter
 catCoords = inlet(:,5:7);
 catCoords(k,:) = [];
 temp2 = zeros(nl,4);
@@ -316,13 +312,20 @@ for i = 1:length(catCoords)
         temp2(j,:) = [vvInletInCat(1,i,j),vvInletInCat(2,i,j),vvInletInCat(3,i,j),...
         time(j)];
     end
-    row1 = i+(i-1)*nl;
-    dataRange1 = ['A',num2str(row1),':E',num2str(row1)];
-    dataRange2 = ['A',num2str(row1+1),':D',num2str(row1+nl)];
-    xlswrite('test.csv',temp1(1,:),dataRange1);
-    xlswrite('test.csv',temp2(1:nl,:),dataRange2);
+    
+    if outputFormat == 0
+        dlmwrite('bct.dat',temp1,'delimiter',' ','-append')
+        dlmwrite('bct.dat',temp2,'delimiter',' ','-append')
+    elseif outputFormat == 1
+        row1 = i+(i-1)*nl+1;
+        dataRange1 = ['A',num2str(row1),':E',num2str(row1)];
+        dataRange2 = ['A',num2str(row1+1),':D',num2str(row1+nl)];
+        xlswrite('bct.csv',temp1(1,:),dataRange1);
+        xlswrite('bct.csv',temp2(1:nl,:),dataRange2);
+    end
 end
 
+% velocity of the nodes outside of the catheter
 outCatCoords = inlet(k,5:7);
 for i = 1:length(outCatCoords)
     temp1(1,:) = [outCatCoords(i,1),outCatCoords(i,2),outCatCoords(i,3),...
@@ -331,11 +334,36 @@ for i = 1:length(outCatCoords)
         temp2(j,:) = [vv(1,i,j),vv(2,i,j),vv(3,i,j),...
         time(j)];
     end
-    row1 = i+(i-1)*nl+(nl+1)*length(catCoords);
-    dataRange1 = ['A',num2str(row1),':E',num2str(row1)];
-    dataRange2 = ['A',num2str(row1+1),':D',num2str(row1+nl+1)];
-    xlswrite('test.csv',temp1(1,:),dataRange1);
-    xlswrite('test.csv',temp2(1:nl,:),dataRange2);
+    
+    if outputFormat == 0
+        dlmwrite('bct.dat',temp1,'delimiter',' ','-append')
+        dlmwrite('bct.dat',temp2,'delimiter',' ','-append')
+    elseif outputFormat == 1
+        row1 = i+(i-1)*nl+(nl+1)*length(catCoords)+1;
+        dataRange1 = ['A',num2str(row1),':E',num2str(row1)];
+        dataRange2 = ['A',num2str(row1+1),':D',num2str(row1+nl+1)];
+        xlswrite('bct.csv',temp1(1,:),dataRange1);
+        xlswrite('bct.csv',temp2(1:nl,:),dataRange2);
+    end
+end
+
+% velocity of the wall nodes
+for i = 1:length(wall)
+    temp1(1,:) = [wall(i,5),wall(i,6),wall(i,7),...
+        nl, wall(i,1)];
+    temp2 = zeros(nl,3);
+    temp2(:,4) = time;
+    
+    if outputFormat == 0
+        dlmwrite('bct.dat',temp1,'delimiter',' ','-append')
+        dlmwrite('bct.dat',temp2,'delimiter',' ','-append')
+    elseif outputFormat == 1
+        row1 = i+(i-1)*nl+(nl+1)*length(inlet)+1;
+        dataRange1 = ['A',num2str(row1),':E',num2str(row1)];
+        dataRange2 = ['A',num2str(row1+1),':D',num2str(row1+nl+1)];
+        xlswrite('bct.csv',temp1(1,:),dataRange1);
+        xlswrite('bct.csv',temp2(1:nl,:),dataRange2);
+    end
 end
 
 %% functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -461,5 +489,4 @@ delP = (8*mu*q/pi) / (rv^4-rc^4-((4*ecc^2*M^2)/(alpha-beta))-8*ecc^2*M^2*s2);
 
 % dimensional velocity
 v = u' * c^2 * delP / mu;
-
 end
