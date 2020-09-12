@@ -74,7 +74,7 @@ time = 0:period/(nl-1):period;  % time vector
 flowrate = interp1(flowData(:,1),flowData(:,2),time);
 
 %% reading the inlet mesh geometry data
-filename = 'inlet_coordinates.csv';
+filename = 'inlet_coordinates_fine.csv';
 data = xlsread([directory,filename]);
 
 % finding vessel wall nodes and inlet nodes
