@@ -23,7 +23,7 @@ close all
 
 %% switches
 plotOn = 1;
-vCat = 0;               % defines the type of the velocity profile inside
+vCat = 1;               % defines the type of the velocity profile inside
                         % the catheter:
                         % 0: zero velocity
                         % 1: parabolic profile
@@ -41,6 +41,7 @@ nl = 201;               % number of time points (entered as "Point Number"
 period = 1;             % one period duration (entered as "Period" in the
                         % "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
+catFlow = -500;
 
 %% rotation matrices
 syms ang integer
@@ -225,11 +226,13 @@ end
 vWall = zeros(length(newWall),nl);
 
 % velocity profile inside the catheter
+rCat = sqrt((inletInCat(1,:)-catCtr).^2+inletInCat(2,:).^2);
 if vCat == 0
-    vInletInCat = zeros(length(inletInCat),nl);
+    vInletInCat = zeros(length(inletInCat),1);
 elseif vCat == 1
-    % TODO
+    vInletInCat = transpose(2*catFlow*(1-(rCat/catR).^2)/(pi*catR^2));
 end
+vInletInCat = repelem(vInletInCat,1,nl);
 
 vvInletInCat = zeros(size(inletInCat,1),size(inletInCat,2),nl);
 % Now, the velocity profile should be rotated to be alighned to the normal
@@ -242,8 +245,12 @@ end
 if plotOn == 1
     figure(3)
     subplot(2,2,3)
-    quiver3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),...
-        zeros(1,length(inletOutCat(1,:))),zeros(1,length(inletOutCat(1,:))),v(:,50)')
+    quiver3([inletOutCat(1,:),inletInCat(1,:)],...
+        [inletOutCat(2,:),inletInCat(2,:)],...
+        [inletOutCat(3,:),inletInCat(3,:)],...
+        zeros(1,length(inletOutCat(1,:))+length(inletInCat(1,:))),...
+        zeros(1,length(inletOutCat(1,:))+length(inletInCat(1,:))),...
+        [v(:,50)',vInletInCat(:,50)'])
     axis equal
     hold on
     scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'*k')
@@ -259,7 +266,7 @@ if plotOn == 1
         min(newWall(2,:)):0.01:max(newWall(2,:)));
     zi = griddata([inletOutCat(1,:),newWall(1,:),inletInCat(1,:)],...
         [inletOutCat(2,:),newWall(2,:),inletInCat(2,:)],...
-        [-v(:,50)',vWall(:,50)',vInletInCat(:,50)'],xi,yi);
+        [-v(:,50)',vWall(:,50)',-vInletInCat(:,50)'],xi,yi);
     contourf(xi,yi,zi,'k','ShowText','on','LabelSpacing',400)
     axis equal
     colormap jet
