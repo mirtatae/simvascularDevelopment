@@ -34,6 +34,7 @@ outputFormat = 0;       % output file format:
 mu = 0.004;             % fluid viscosity [use consistent units with other 
                         % parameters]
 catR = 1.0;             % catheter radius
+catT = 0.3;             % catheter thickness
 ecc = 0.8;              % catheter eccentricity
 nl = 201;               % number of time points (entered as "Point Number"
                         % in the "Set Inlet/Outlet BCs>BC Type: Prescribed 
@@ -41,7 +42,7 @@ nl = 201;               % number of time points (entered as "Point Number"
 period = 1;             % one period duration (entered as "Period" in the
                         % "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
-catFlow = -500;
+catFlow = -500;         % flowrate inside the catheter
 
 %% rotation matrices
 syms ang integer
@@ -173,7 +174,7 @@ for i = 1:length(newWall)
 end
 
 % finding the catheter and vessel center for the bipolar transformation
-[vesCtr,catCtr,c,alfa,betta] = centers(catR,vesR,ecc);
+[vesCtr,catCtr,c,alfa,betta] = centers(catR+catT,vesR,ecc);
 
 % translating the points using the vessel center point
 newWall = newWall + [vesCtr;0;0];
@@ -185,7 +186,7 @@ newWallSort = newWall(:,iW);
 
 
 % finding the inlet points inside and outside the catheter
-k = find(abs(sqrt((newInlet(1,:)-catCtr).^2+(newInlet(2,:)).^2))>catR);
+k = find(abs(sqrt((newInlet(1,:)-catCtr).^2+(newInlet(2,:)).^2))>catR+catT);
 inletOutCat = newInlet(:,k);
 inletInCat = newInlet;
 inletInCat(:,k) = [];
@@ -199,6 +200,7 @@ if plotOn == 1
     subplot(2,2,2)
     line([newWallSort(1,:),newWallSort(1,1)],[newWallSort(2,:),newWallSort(2,1)],'Color','k','LineWidth',1)
     catheter(catCtr,0,catR);
+    catheter(catCtr,0,catR+catT);
     axis equal
     hold on
     scatter(vesCtr,0,'xk')
@@ -212,7 +214,7 @@ end
 
 %% velocity profile
 % velocity profile outside of the catheter
-v = velEccCylinders(inletOutCat(1,:),inletOutCat(2,:),vesR,catR,mu,flowrate,c,alfa,betta,ecc);
+v = velEccCylinders(inletOutCat(1,:),inletOutCat(2,:),vesR,catR+catT,mu,flowrate,c,alfa,betta,ecc);
 
 vv = zeros(size(inletOutCat,1),size(inletOutCat,2),nl);
 % Now, the velocity profile should be rotated to be alighned to the normal
@@ -231,6 +233,9 @@ if vCat == 0
     vInletInCat = zeros(length(inletInCat),1);
 elseif vCat == 1
     vInletInCat = transpose(2*catFlow*(1-(rCat/catR).^2)/(pi*catR^2));
+    
+    % set the velocity on the catheter wall to zero
+    vInletInCat(vInletInCat > 0) = 0;
 end
 vInletInCat = repelem(vInletInCat,1,nl);
 
