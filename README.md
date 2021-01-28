@@ -12,6 +12,9 @@ Main file: inletBCT.m
 ## Description 
 comming soon after the manuscript is accepted for publication.
 
+## Example
+Coming soon ...
+
 ## Reference
 Please cite the following manuscript:
 
