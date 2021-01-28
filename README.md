@@ -6,7 +6,7 @@ This repository includes a set of MATLAB codes that add different functionalitie
 ~~~
 Language: MATLAB
 
-Main file: [inletBCT.m](./blob/master/inletBCT.m)
+Main file: inletBCT.m
 ~~~
 ### Table of Contents
 * [Description](#description)
