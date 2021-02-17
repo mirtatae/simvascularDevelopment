@@ -4,10 +4,6 @@ This repository includes a set of MATLAB codes that add different functionalitie
 
 # Adding catheter to the inlet boundary condition
 
-**Language: _MATLAB_**
-
-**Main file: _inletBCT.m_**
-
 ### Table of Contents
 * [Description](#description)
 * [Input Files](#input-files)
