@@ -12,11 +12,6 @@
 %
 %
 %
-
-%% developments
-% TODO: add catheter velocity profile
-% TODO: add catheter wall thickness
-
 %%
 clear
 close all
