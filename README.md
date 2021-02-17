@@ -44,6 +44,7 @@ Clone this repository. Set the Matlab directory to this clone. Run the follwoing
 ```
 inletBCT
 ```
+Adjust the values of the parameters in the "switches" and "parameter definition" sections.
 
 ## Reference
 Please cite the following manuscript:
