@@ -27,7 +27,7 @@ The MATLAB function _inletBCT.m_ needs two input .csv file.
 | ------------ | --------- | --------- | --------- | ----------- | ----------- | ----------- |
 |     ...      |           |           |           |             |             |             |
 
-where VelocityX, VelocityY, and VelocityZ are the velocity components in x, y, z direction (obtained from a steady-state simulation, e.g. mesh independency steady), respectively. XCoordinate, YCoordinate, and ZCoordinate are the (x, y, z) coordinates of the mesh nodes.
+where VelocityX, VelocityY, and VelocityZ are the velocity components in x, y, z direction (obtained from a steady-state simulation, e.g. mesh independency steady), respectively. XCoordinate, YCoordinate, and ZCoordinate are the (x, y, z) coordinates of the mesh nodes. The columns corresponding to _velocity_ are used to identify the mesh nodes corresponding to the arterial wall (zero velocity).
 
 ### How to prepare inlet_coordinate.csv file
 
@@ -40,11 +40,11 @@ The _inlet_coordinate.csv_ file can be created in different ways. As long as the
 5) Split the view and add a "SpreadSheetView". Under the "Attribute" dropdown menue, select "Point Data". Click "Show only selected elements". Under the "Toggle column visibility" dropdown menue, select only "GlobalNodeID", "Points", and "Velocity". Now, click "Export Spreadsheet" and save it as _inlet_coordinate.csv_.
 
 ## Example
-Clone this repository. Set the Matlab directory to this clone. Run the follwoing in the Matlab command line:
+Clone this repository. Set the Matlab directory to this clone. Adjust the values of the parameters in the "switches" and "parameter definition" sections of the _inletBCT.m_. Run the follwoing in the Matlab command line:
 ```
 inletBCT
 ```
-Adjust the values of the parameters in the "switches" and "parameter definition" sections.
+This will generate a _bct.dat_ file. After you "Create Data Files for Simulation" in SimVascular, you need to replace this _bct.dat_ file with the one that is created in the simulation directory.
 
 ## Reference
 Please cite the following manuscript:
