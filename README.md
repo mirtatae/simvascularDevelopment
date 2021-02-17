@@ -19,7 +19,7 @@ comming soon after the manuscript is accepted for publication.
 ## Input Files
 The MATLAB function inletBCT.m needs two input .csv file.
 
-1) flowrate.csv: A .csv file that contains the inlet flow rate (pulsatile).
+1) flowrate.csv: A .csv file that contains the inlet flow rate (pulsatile). [see an example](#.../example/)
 2) inlet_coordinates.csv: A .csv file with seven columns that contain the coordinates of the mesh nodes in the inlet plane. The columns are in the following order:
 
 GlobalNodeID | VelocityX | VelocityY | VelocityZ | XCoordinate | YCoordinate | ZCoordinate
