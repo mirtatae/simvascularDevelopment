@@ -33,16 +33,16 @@ outputFormat = 0;       % output file format:
 %% parameter definition
 mu = 0.004;             % fluid viscosity [use consistent units with other 
                         % parameters]
-catR = 1.0;             % catheter radius
-catT = 0.3;             % catheter thickness
-ecc = 0.8;              % catheter eccentricity
+catR = 0.57/2;             % catheter radius
+catT = 0.23/2;             % catheter thickness
+ecc = 0.05;              % catheter eccentricity
 nl = 201;               % number of time points (entered as "Point Number"
                         % in the "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
 period = 1;             % one period duration (entered as "Period" in the
                         % "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
-catFlow = -500;         % flowrate inside the catheter
+catFlow = -330;         % flowrate inside the catheter
 
 %% rotation matrices
 syms ang integer
@@ -64,7 +64,7 @@ cwTy(ang) = [cosd(ang) 0 -sind(ang); ...
     sind(ang) 0 cosd(ang)];
 
 %% setting the directory
-directory = 'E:\Project A\SimvascularDevelopment\simvascularDevelopment\example\';
+directory = 'example\';
 
 %% reading flowrate data
 filename = 'flowrate.csv';
@@ -76,7 +76,7 @@ time = 0:period/(nl-1):period;  % time vector
 flowrate = interp1(flowData(:,1),flowData(:,2),time);
 
 %% reading the inlet mesh geometry data
-filename = 'inlet_coordinates_fine.csv';
+filename = 'Patient8_inlet_coordinates_mesh2.csv';
 data = xlsread([directory,filename]);
 
 % finding vessel wall nodes and inlet nodes
@@ -113,7 +113,8 @@ n = cross(wall(1,5:7)-wall(i(end),5:7),wall(1,5:7)-wall(i(end-1),5:7));
 n = n/norm(n);
 
 gama = atand(n(2)/n(1));
-beta = atand(sqrt(n(1)^2+n(2)^2)/n(3));
+beta = abs(atand(sqrt(n(1)^2+n(2)^2)/n(3)));
+% TODO: check the sign of beta for different input files.
 
 if plotOn == 1
     figure(1)
@@ -302,6 +303,43 @@ if plotOn == 1
     ylabel('Y [mm]')
     zlabel('Z [mm]')
     axis equal
+    
+    figure(4)
+    line([newWallSort(1,:),newWallSort(1,1)],[newWallSort(2,:),newWallSort(2,1)],'Color','k','LineWidth',1.5)
+    catheter(catCtr,0,catR);
+    catheter(catCtr,0,catR+catT);
+    axis equal
+    hold on
+    scatter(vesCtr,0,'xk')
+    scatter(catCtr,0,'xb')
+    scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'k','filled')
+    scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'g','filled')
+    catheter(vesCtr,0,vesR);
+    set(gca,'Visible','off')
+    
+    
+    figure(5)
+    [xi,yi] = meshgrid(min(newWall(1,:)):0.01:max(newWall(1,:)),...
+        min(newWall(2,:)):0.01:max(newWall(2,:)));
+    zi = griddata([inletOutCat(1,:),newWall(1,:),inletInCat(1,:)],...
+        [inletOutCat(2,:),newWall(2,:),inletInCat(2,:)],...
+        [-v(:,50)',vWall(:,50)',-vInletInCat(:,50)'],xi,yi);
+    contourf(xi,yi,zi,[0 100 200 300 400 500 600],'k')
+    axis equal
+    colormap(jet(5))
+    set(gca,'Visible','off')
+    colorbar
+    caxis([0 500])
+    hold on
+    scatter3(inletOutCat(1,:),inletOutCat(2,:),inletOutCat(3,:),'k','filled')
+    scatter3(inletInCat(1,:),inletInCat(2,:),inletInCat(3,:),'g','filled')
+    catheter(catCtr,0,catR);
+    catheter(catCtr,0,catR+catT);
+    
+    fig4name = ['cord_fr',num2str(10*catR),'t',num2str(10*catT),'e',num2str(10*ecc)];
+    fig5name = ['velo_catV_fr',num2str(10*catR),'t',num2str(10*catT),'e',num2str(10*ecc)];
+%     print('-f4',fig4name,'-djpeg','-r300')
+%     print('-f5',fig5name,'-djpeg','-r300')
 end
 
 
@@ -392,7 +430,7 @@ hold on
 theta = 0:pi/50:2*pi;
 xunit = r * cos(theta) + x;
 yunit = r * sin(theta) + y;
-h = plot(xunit, yunit);
+h = plot(xunit, yunit,'k','LineWidth',1.5);
 hold off
 end
 
