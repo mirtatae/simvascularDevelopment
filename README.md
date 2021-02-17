@@ -15,7 +15,7 @@ This repository includes a set of MATLAB codes that add different functionalitie
 * [Example](#example)
 * [Reference](#reference)
 ## Description 
-comming soon after the manuscript is accepted for publication.
+Coming soon after the manuscript (see [Reference](#reference)) is accepted for publication.
 
 ## Input Files
 The MATLAB function _inletBCT.m_ needs two input .csv file.
