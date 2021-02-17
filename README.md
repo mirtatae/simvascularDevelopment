@@ -44,7 +44,7 @@ Clone this repository. Set the Matlab directory to this clone. Adjust the values
 ```
 inletBCT
 ```
-This will generate a _bct.dat_ file. After you "Create Data Files for Simulation" in SimVascular, you need to replace this _bct.dat_ file with the one that is created in the simulation directory.
+This will generate a _bct.dat_ file. After you "Create Data Files for Simulation" in SimVascular, you need to replace the _bct.dat_ file that is created in the simulation directory with the _bct.dat_ file that is generated using this MATLAB code. Now, you are ready to run your CFD simulation with a catheter in the inlet plane.
 
 ## Reference
 Please cite the following manuscript:
