@@ -3,11 +3,11 @@
 This repository includes a set of MATLAB codes that add different functionalities to the open-source software SimVascular (www.simvascular.org). 
 
 # Adding catheter to the inlet boundary condition
-~~~
-Language: MATLAB
 
-Main file: inletBCT.m
-~~~
+**Language: _MATLAB_**
+
+**Main file: _inletBCT.m_**
+
 ### Table of Contents
 * [Description](#description)
 * [Input Files](#input-files)
@@ -17,10 +17,10 @@ Main file: inletBCT.m
 comming soon after the manuscript is accepted for publication.
 
 ## Input Files
-The MATLAB function inletBCT.m needs two input .csv file.
+The MATLAB function _inletBCT.m_ needs two input .csv file.
 
-1) flowrate.csv: A .csv file that contains the inlet flow rate (pulsatile). See an [example](https://github.com/mirtatae/simvascularDevelopment/blob/master/example/flowrate.csv).
-2) inlet_coordinates.csv: A .csv file with seven columns that contain the coordinates of the mesh nodes in the inlet plane. See an [example](https://github.com/mirtatae/simvascularDevelopment/blob/master/example/inlet_coordinates.csv). The columns are in the following order:
+1) **flowrate.csv**: A .csv file that contains the inlet flow rate (pulsatile). See an [example](https://github.com/mirtatae/simvascularDevelopment/blob/master/example/flowrate.csv).
+2) **inlet_coordinates.csv**: A .csv file with seven columns that contain the coordinates of the mesh nodes in the inlet plane. See an [example](https://github.com/mirtatae/simvascularDevelopment/blob/master/example/inlet_coordinates.csv). The columns are in the following order:
 
 GlobalNodeID | VelocityX | VelocityY | VelocityZ | XCoordinate | YCoordinate | ZCoordinate
 
