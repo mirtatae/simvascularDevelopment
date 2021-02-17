@@ -11,7 +11,7 @@ This repository includes a set of MATLAB codes that add different functionalitie
 ### Table of Contents
 * [Description](#description)
 * [Input Files](#input-files)
-  * [How to prepare inlet_coordinate.csv file](#How-to-prepare-inlet_coordinate.csv-file)
+  * [How to prepare inlet_coordinate.csv file](#how-to-prepare-inlet_coordinate.csv-file)
 * [Example](#example)
 * [Reference](#reference)
 ## Description 
