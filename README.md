@@ -1,8 +1,8 @@
-[![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
-
 # Introduction
  
-This repository includes a set of MATLAB codes that add different functionalities to the open-source software SimVascular (www.simvascular.org). 
+This repository includes a set of MATLAB codes that add different functionalities to the open-source software SimVascular (www.simvascular.org).
+
+[![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
 
 # Adding catheter to the inlet boundary condition
 
