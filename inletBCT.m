@@ -1,16 +1,18 @@
 % Code Description
 %
 % Important parameters:
-%
+% 1) Define the parameters in the "parameter definition" section.
+% 2) Set the "directory" value to the folder that contains the inlet flow
+% rate and inlet mesh node coordinates (two .csv files). See ReadMe file.
 %
 % Author: Amirtaha Taebi
-% University of California Davis
+% University of California, Davis
 % Summer 2020
 %
 % Reference
 % Please cite the following manuscript:
-%
-%
+% Taebi, A., Berk, S., Roncali, E. Realistic boundary conditions in 
+% SimVascular through inlet catheter modeling, Under review.
 %
 %%
 clear
@@ -28,7 +30,7 @@ outputFormat = 0;       % output file format:
 %% parameter definition
 mu = 0.004;             % fluid viscosity [use consistent units with other 
                         % parameters]
-catR = 0.57/2;             % catheter radius
+catR = 1.0;             % catheter radius
 catT = 0.23/2;             % catheter thickness
 ecc = 0.05;              % catheter eccentricity
 nl = 201;               % number of time points (entered as "Point Number"
@@ -38,6 +40,9 @@ period = 1;             % one period duration (entered as "Period" in the
                         % "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
 catFlow = -330;         % flowrate inside the catheter
+
+%% setting the directory
+directory = 'example\';
 
 %% rotation matrices
 syms ang integer
@@ -58,10 +63,7 @@ cwTy(ang) = [cosd(ang) 0 -sind(ang); ...
     0 1 0; ...
     sind(ang) 0 cosd(ang)];
 
-%% setting the directory
-directory = 'example\';
-
-%% reading flowrate data
+%% reading flowrate data (flowrate.csv)
 filename = 'flowrate.csv';
 flowData = xlsread([directory,filename]);
 
@@ -70,8 +72,8 @@ time = 0:period/(nl-1):period;  % time vector
 % interpolated flowrate
 flowrate = interp1(flowData(:,1),flowData(:,2),time);
 
-%% reading the inlet mesh geometry data
-filename = 'Patient8_inlet_coordinates_mesh2.csv';
+%% reading the inlet mesh geometry data (inlet_coordinate.csv)
+filename = 'inlet_coordinates.csv';
 data = xlsread([directory,filename]);
 
 % finding vessel wall nodes and inlet nodes
@@ -409,129 +411,4 @@ for i = 1:length(wall)
         xlswrite('bct.csv',temp1(1,:),dataRange1);
         xlswrite('bct.csv',temp2(1:nl,:),dataRange2);
     end
-end
-
-%% functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function h = catheter(x,y,r)
-% This function plots a circle (e.g. the catheter) with a radius of r
-% centered at (x,y).
-%
-% inputs:
-%   x,y     center of the circle
-%   r       radius of the circle
-
-% Body
-hold on
-theta = 0:pi/50:2*pi;
-xunit = r * cos(theta) + x;
-yunit = r * sin(theta) + y;
-h = plot(xunit, yunit,'k','LineWidth',1.5);
-hold off
-end
-
-function [cVes,cCat,c,alpha,beta] = centers(rc,rv,ecc)
-% This function calculates the center of the vessel and the catheter for
-% correct transformation in the bipolar system.
-%
-% inputs:
-%   rc      radius of catheter
-%   rv      radius of blood vessel
-%   ecc     eccentricity, i.e. distance between the center of catheter and
-%           center of blood vessel
-%
-% outputs:
-%   cVes    center of the blood vessel
-%   cCat    center of the catheter
-%   c       a constant
-%   alpha   line of constant etta in the bipolar system which represents a
-%           circle in the cartesian system
-%   beta    line of constant etta in the bipolar system which represents a
-%           circle in the cartesian system
-%
-% Author: Amirtaha Taebi
-% University of California Davis
-% Summer 2020
-%
-% Reference
-% Please cite the following manuscript:
-%
-%
-
-% Body
-gama = rc/rv;
-phi = ecc/(rv-rc);
-
-alpha = acosh((gama*(1+phi^2)+(1-phi^2))/(2*phi*gama));
-beta = acosh((gama*(1-phi^2)+(1+phi^2))/(2*phi));
-
-c = rc * sinh(alpha);
-
-cCat = c * coth(alpha);
-cVes = c * coth(beta);
-end
-
-function v = velEccCylinders(x,y,rv,rc,mu,q,c,alpha,beta,ecc)
-% This function calculates the velocity profile between two eccentric
-% cylinders based on the exact solution provided in:
-% DOI: 10.1002/aic.690110319
-%
-% inputs:
-%   x,y     cartesian cordinates of the points to calculate velocity at
-%   rv      radius of the blood vessel
-%   rc      radius of the catheter
-%   mu      fluid (e.g. blood) viscosity
-%   q       fluid (e.g. blood) flowrate
-%   c       a constant
-%   alpha   line of constant etta in the bipolar system which represents a
-%           circle in the cartesian system
-%   beta    line of constant etta in the bipolar system which represents a
-%           circle in the cartesian system
-%   ecc     eccentricity, i.e. distance between the center of catheter and
-%           center of blood vessel
-%
-% outputs:
-%   v       velocity in z direction at the points specified with x,y
-%
-%
-% Author: Amirtaha Taebi
-% University of California Davis
-% Summer 2020
-%
-% Reference
-% Please cite the following manuscript:
-%
-%
-
-% Body
-% parameter definition
-
-
-etta = 0.5 * log((y.^2+(x+c).^2)./(y.^2+(x-c).^2));
-xi = atan(2*y*c./(x.^2+y.^2-c^2));
-
-
-F = (alpha*coth(beta)-beta*coth(alpha))/(2*(alpha-beta));
-E = (coth(alpha)-coth(beta))/(2*(alpha-beta));
-
-syms n
-s1 = double(symsum((((coth(alpha)-coth(beta))/(exp(2*n*alpha)-exp(2*n*beta))) * exp(n*etta) + ...
-    (((exp(2*n*alpha)*coth(beta)-exp(2*n*beta)*coth(alpha))/(exp(2*n*alpha)-exp(2*n*beta))) - ...
-    coth(etta)) .* exp(-n*etta)) .* ...
-    cos(n*xi), n, 1, inf));
-
-% non-dimensional velocity
-u = F + E*etta - 0.5*coth(etta) + s1;
-
-
-f = (rv^2-rc^2+ecc^2)/(2*ecc);
-M = sqrt(f^2-rv^2);
-
-s2 = double(symsum((n*exp(-n*(alpha+beta)))/(sinh(n*alpha-n*beta)), ...
-    n, 1, inf));
-
-% pressure gradient
-delP = (8*mu*q/pi) / (rv^4-rc^4-((4*ecc^2*M^2)/(alpha-beta))-8*ecc^2*M^2*s2);
-
-% dimensional velocity
-v = u' * c^2 * delP / mu;
 end
