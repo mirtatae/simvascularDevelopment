@@ -38,7 +38,14 @@ The _inlet_coordinate.csv_ file can be created in different ways. As long as the
 5) Split the view and add a "SpreadSheetView". Under the "Attribute" dropdown menue, select "Point Data". Click "Show only selected elements". Under the "Toggle column visibility" dropdown menue, select only "GlobalNodeID", "Points", and "Velocity". Now, click "Export Spreadsheet" and save it as _inlet_coordinate.csv_.
 
 ## Example
-Clone this repository. Set the MATLAB directory to this clone. Adjust the values of the parameters in the "switches" and "parameter definition" sections of the _inletBCT.m_. Run the follwoing in the Matlab command line:
+Clone this repository. Set the MATLAB directory to this clone. Adjust the values of the parameters in the "switches" and "parameter definition" sections of the _inletBCT.m_. Set appropriate values for _directory_, _filename_ (corresponding to the _flowrate.csv_), and _filename2_ (corresponding to the _inlet_coordinate.csv_).
+```ruby
+directory = 'example\';
+filename = 'flowrate.csv';
+filename2 = 'inlet_coordinates.csv';
+```
+
+Run the follwoing in the MATLAB command line:
 ```
 inletBCT
 ```
@@ -50,6 +57,8 @@ Please cite the following manuscript:
 Taebi, A., Berk, S., Roncali, E. Realistic boundary conditions in SimVascular through inlet catheter modeling, Under review.
 
 ## Developed In
+
+[Roncali Lab](https://roncalilab.engineering.ucdavis.edu/) at @ucdavis
 
 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/The_University_of_California_Davis.svg/500px-The_University_of_California_Davis.svg.png" width="100"> | <img src="https://uploads-ssl.webflow.com/5f71f6ba15ef4216be8dd209/5f7619583a504af1f2b64115_logo-p-500.png" width="100"> |
 |------------|-------------|
