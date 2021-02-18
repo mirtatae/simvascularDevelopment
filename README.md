@@ -38,7 +38,7 @@ The _inlet_coordinate.csv_ file can be created in different ways. As long as the
 5) Split the view and add a "SpreadSheetView". Under the "Attribute" dropdown menue, select "Point Data". Click "Show only selected elements". Under the "Toggle column visibility" dropdown menue, select only "GlobalNodeID", "Points", and "Velocity". Now, click "Export Spreadsheet" and save it as _inlet_coordinate.csv_.
 
 ## Example
-Clone this repository. Set the Matlab directory to this clone. Adjust the values of the parameters in the "switches" and "parameter definition" sections of the _inletBCT.m_. Run the follwoing in the Matlab command line:
+Clone this repository. Set the MATLAB directory to this clone. Adjust the values of the parameters in the "switches" and "parameter definition" sections of the _inletBCT.m_. Run the follwoing in the Matlab command line:
 ```
 inletBCT
 ```
