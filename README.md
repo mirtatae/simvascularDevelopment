@@ -80,7 +80,7 @@ Taebi, A., Berk, S., Roncali, E. Realistic boundary conditions in SimVascular th
 
 ## Developed In
 
-[Roncali Lab](https://roncalilab.engineering.ucdavis.edu/) at the [University of California, Davis](https://www.ucdavis.edu) by @mirtatae.
+[Roncali Lab](https://roncalilab.engineering.ucdavis.edu/) at the [University of California, Davis](https://www.ucdavis.edu).
 
 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/The_University_of_California_Davis.svg/500px-The_University_of_California_Davis.svg.png" width="100"> | <img src="https://uploads-ssl.webflow.com/5f71f6ba15ef4216be8dd209/5f7619583a504af1f2b64115_logo-p-500.png" width="100"> |
 |------------|-------------|
