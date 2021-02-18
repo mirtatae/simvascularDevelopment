@@ -1,7 +1,11 @@
-% Code Description
+% Code Description 
+% This code maps a volumetric flow rate of interest to the
+% inlet plane, which contains a catheter with an adjustable radius, wall
+% thickness, and eccentricity. The code's output is a boundary condition
+% file compatible with the software SimVascular. 
 %
-% Important parameters:
-% 1) Define the parameters in the "parameter definition" section.
+% Important parameters: 
+% 1) Define the parameters in the "parameter definition" section. 
 % 2) Set the "directory" value to the folder that contains the inlet flow
 % rate and inlet mesh node coordinates (two .csv files). See ReadMe file.
 %
@@ -19,7 +23,7 @@ clear
 close all
 
 %% switches
-plotOn = 1;
+plotOn = 0;
 vCat = 1;               % defines the type of the velocity profile inside
                         % the catheter:
                         % 0: zero velocity
@@ -30,7 +34,7 @@ outputFormat = 0;       % output file format:
 %% parameter definition
 mu = 0.004;             % fluid viscosity [use consistent units with other 
                         % parameters]
-catR = 1.0;             % catheter radius
+catR = 0.57/2;             % catheter radius
 catT = 0.23/2;             % catheter thickness
 ecc = 0.05;              % catheter eccentricity
 nl = 201;               % number of time points (entered as "Point Number"
@@ -43,6 +47,8 @@ catFlow = -330;         % flowrate inside the catheter
 
 %% setting the directory
 directory = 'example\';
+filename = 'flowrate.csv';
+filename2 = 'inlet_coordinates.csv';
 
 %% rotation matrices
 syms ang integer
@@ -64,7 +70,6 @@ cwTy(ang) = [cosd(ang) 0 -sind(ang); ...
     sind(ang) 0 cosd(ang)];
 
 %% reading flowrate data (flowrate.csv)
-filename = 'flowrate.csv';
 flowData = xlsread([directory,filename]);
 
 time = 0:period/(nl-1):period;  % time vector
@@ -73,8 +78,7 @@ time = 0:period/(nl-1):period;  % time vector
 flowrate = interp1(flowData(:,1),flowData(:,2),time);
 
 %% reading the inlet mesh geometry data (inlet_coordinate.csv)
-filename = 'inlet_coordinates.csv';
-data = xlsread([directory,filename]);
+data = xlsread([directory,filename2]);
 
 % finding vessel wall nodes and inlet nodes
 ki = find(data(:,2));
@@ -352,7 +356,7 @@ end
 catCoords = inlet(:,5:7);
 catCoords(k,:) = [];
 temp2 = zeros(nl,4);
-for i = 1:length(catCoords)
+for i = 1:size(catCoords,1)
     temp1(1,:) = [catCoords(i,1),catCoords(i,2),catCoords(i,3),...
         nl, inletInCatID(i)];
     for j = 1:nl
