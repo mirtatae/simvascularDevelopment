@@ -11,7 +11,9 @@ This repository includes a set of MATLAB codes that add different functionalitie
 * [Example](#example)
 * [Reference](#reference)
 ## Description 
-Coming soon after the manuscript (see [Reference](#reference)) is accepted for publication.
+This pipeline maps a volumetric flow rate of interest to the inlet plane, which contains a catheter with an adjustable radius, wall thickness, and eccentricity. The pipeline's output is a boundary condition file (_bct.dat_) compatible with the software SimVascular.
+
+More description coming soon after the manuscript (see [Reference](#reference)) is accepted for publication.
 
 ## Input Files
 The MATLAB function _inletBCT.m_ needs two input .csv file.
