@@ -13,10 +13,8 @@ This repository includes a set of MATLAB codes that add different functionalitie
 ## Description 
 This pipeline maps a volumetric flow rate of interest to the inlet plane, which contains a catheter with an adjustable radius, wall thickness, and eccentricity. The pipeline's output is a boundary condition file (_bct.dat_) compatible with the software SimVascular.
 
-More description coming soon after the manuscript (see [Reference](#reference)) is accepted for publication.
-
 ## Input Files
-The MATLAB function _inletBCT.m_ needs two input .csv file.
+The MATLAB function _inletBCT.m_ needs two input .csv files.
 
 - **flowrate.csv**: A .csv file that contains the inlet flow rate (pulsatile). See an [example](https://github.com/mirtatae/simvascularDevelopment/blob/master/example/flowrate.csv).
 - **inlet_coordinates.csv**: A .csv file with seven columns that contain the coordinates of the mesh nodes in the inlet plane. See an [example](https://github.com/mirtatae/simvascularDevelopment/blob/master/example/inlet_coordinates.csv). The columns are in the following order:
@@ -82,7 +80,7 @@ Taebi, A., Berk, S., Roncali, E. Realistic boundary conditions in SimVascular th
 
 ## Developed In
 
-[Roncali Lab](https://roncalilab.engineering.ucdavis.edu/) at the [University of California, Davis](https://www.ucdavis.edu).
+[Roncali Lab](https://roncalilab.engineering.ucdavis.edu/) at the [University of California, Davis](https://www.ucdavis.edu) by @mirtatae.
 
 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/The_University_of_California_Davis.svg/500px-The_University_of_California_Davis.svg.png" width="100"> | <img src="https://uploads-ssl.webflow.com/5f71f6ba15ef4216be8dd209/5f7619583a504af1f2b64115_logo-p-500.png" width="100"> |
 |------------|-------------|
