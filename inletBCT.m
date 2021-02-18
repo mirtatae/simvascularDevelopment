@@ -378,7 +378,7 @@ end
 
 % velocity of the nodes outside of the catheter
 outCatCoords = inlet(k,5:7);
-for i = 1:length(outCatCoords)
+for i = 1:size(outCatCoords,1)
     temp1(1,:) = [outCatCoords(i,1),outCatCoords(i,2),outCatCoords(i,3),...
         nl, inletOutCatID(i)];
     for j = 1:nl
