@@ -38,14 +38,38 @@ The _inlet_coordinate.csv_ file can be created in different ways. As long as the
 5) Split the view and add a "SpreadSheetView". Under the "Attribute" dropdown menue, select "Point Data". Click "Show only selected elements". Under the "Toggle column visibility" dropdown menue, select only "GlobalNodeID", "Points", and "Velocity". Now, click "Export Spreadsheet" and save it as _inlet_coordinate.csv_.
 
 ## Example
-Clone this repository. Set the MATLAB directory to this clone. Adjust the values of the parameters in the "switches" and "parameter definition" sections of the _inletBCT.m_. Set appropriate values for _directory_, _filename_ (corresponding to the _flowrate.csv_), and _filename2_ (corresponding to the _inlet_coordinate.csv_).
+Clone this repository. Set the MATLAB directory to this clone. Adjust the values of the parameters in the "switches" and "parameter definition" sections of the _inletBCT.m_. For example:
+```ruby
+%% switches
+plotOn = 0;
+vCat = 1;               % defines the type of the velocity profile inside the catheter:
+                        % 0: zero velocity
+                        % 1: parabolic profile
+outputFormat = 0;       % output file format:
+                        % 0: .dat
+                        % 1: .csv
+%% parameter definition
+mu = 0.004;             % fluid viscosity [use consistent units with other parameters]
+catR = 0.1;             % catheter radius
+catT = 0.02;            % catheter thickness
+ecc = 0.05;             % catheter eccentricity
+nl = 201;               % number of time points (entered as "Point Number"
+                        % in the "Set Inlet/Outlet BCs>BC Type: Prescribed 
+                        % Velocities" in the SimVascular software)
+period = 1;             % one period duration (entered as "Period" in the
+                        % "Set Inlet/Outlet BCs>BC Type: Prescribed 
+                        % Velocities" in the SimVascular software)
+catFlow = -330;         % flowrate inside the catheter
+```
+
+Set appropriate values for _directory_, _filename_ (corresponding to the _flowrate.csv_), and _filename2_ (corresponding to the _inlet_coordinate.csv_). For example:
 ```ruby
 directory = 'example\';
 filename = 'flowrate.csv';
 filename2 = 'inlet_coordinates.csv';
 ```
 
-Run the follwoing in the MATLAB command line:
+Run _inletBCT.m_ in the MATLAB command line:
 ```
 inletBCT
 ```
@@ -58,7 +82,7 @@ Taebi, A., Berk, S., Roncali, E. Realistic boundary conditions in SimVascular th
 
 ## Developed In
 
-[Roncali Lab](https://roncalilab.engineering.ucdavis.edu/) at @ucdavis
+[Roncali Lab](https://roncalilab.engineering.ucdavis.edu/) at the [University of California, Davis](https://www.ucdavis.edu).
 
 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/The_University_of_California_Davis.svg/500px-The_University_of_California_Davis.svg.png" width="100"> | <img src="https://uploads-ssl.webflow.com/5f71f6ba15ef4216be8dd209/5f7619583a504af1f2b64115_logo-p-500.png" width="100"> |
 |------------|-------------|
