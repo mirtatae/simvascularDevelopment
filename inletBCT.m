@@ -23,7 +23,7 @@ clear
 close all
 
 %% switches
-plotOn = 0;
+plotOn = 1;
 vCat = 1;               % defines the type of the velocity profile inside
                         % the catheter:
                         % 0: zero velocity
@@ -48,7 +48,7 @@ catFlow = -330;         % flowrate inside the catheter
 %% setting the directory
 directory = 'example\';
 filename = 'flowrate.csv';
-filename2 = 'inlet_coordinates.csv';
+filename2 = 'Patient8_inlet_coordinates_mesh2_refine.csv';
 
 %% rotation matrices
 syms ang integer
@@ -269,8 +269,8 @@ if plotOn == 1
     title('Velocity profile')
     
     subplot(2,2,4)
-    [xi,yi] = meshgrid(min(newWall(1,:)):0.01:max(newWall(1,:)),...
-        min(newWall(2,:)):0.01:max(newWall(2,:)));
+    [xi,yi] = meshgrid(min(newWall(1,:)):(max(newWall(1,:))-min(newWall(1,:)))/500:max(newWall(1,:)),...
+        min(newWall(2,:)):(max(newWall(2,:))-min(newWall(2,:)))/500:max(newWall(2,:)));
     zi = griddata([inletOutCat(1,:),newWall(1,:),inletInCat(1,:)],...
         [inletOutCat(2,:),newWall(2,:),inletInCat(2,:)],...
         [-v(:,50)',vWall(:,50)',-vInletInCat(:,50)'],xi,yi);
@@ -320,8 +320,8 @@ if plotOn == 1
     
     
     figure(5)
-    [xi,yi] = meshgrid(min(newWall(1,:)):0.01:max(newWall(1,:)),...
-        min(newWall(2,:)):0.01:max(newWall(2,:)));
+    [xi,yi] = meshgrid(min(newWall(1,:)):(max(newWall(1,:))-min(newWall(1,:)))/500:max(newWall(1,:)),...
+        min(newWall(2,:)):(max(newWall(2,:))-min(newWall(2,:)))/500:max(newWall(2,:)));
     zi = griddata([inletOutCat(1,:),newWall(1,:),inletInCat(1,:)],...
         [inletOutCat(2,:),newWall(2,:),inletInCat(2,:)],...
         [-v(:,50)',vWall(:,50)',-vInletInCat(:,50)'],xi,yi);
@@ -365,7 +365,7 @@ for i = 1:size(catCoords,1)
     end
     
     if outputFormat == 0
-        dlmwrite('bct.dat',temp1,'delimiter',' ','-append')
+        dlmwrite('bct.dat',temp1,'precision',8,'delimiter',' ','-append')
         dlmwrite('bct.dat',temp2,'delimiter',' ','-append')
     elseif outputFormat == 1
         row1 = i+(i-1)*nl+1;
@@ -387,7 +387,7 @@ for i = 1:size(outCatCoords,1)
     end
     
     if outputFormat == 0
-        dlmwrite('bct.dat',temp1,'delimiter',' ','-append')
+        dlmwrite('bct.dat',temp1,'precision',8,'delimiter',' ','-append')
         dlmwrite('bct.dat',temp2,'delimiter',' ','-append')
     elseif outputFormat == 1
         row1 = i+(i-1)*nl+(nl+1)*length(catCoords)+1;
@@ -406,7 +406,7 @@ for i = 1:length(wall)
     temp2(:,4) = time;
     
     if outputFormat == 0
-        dlmwrite('bct.dat',temp1,'delimiter',' ','-append')
+        dlmwrite('bct.dat',temp1,'precision',8,'delimiter',' ','-append')
         dlmwrite('bct.dat',temp2,'delimiter',' ','-append')
     elseif outputFormat == 1
         row1 = i+(i-1)*nl+(nl+1)*length(inlet)+1;
