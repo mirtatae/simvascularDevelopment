@@ -42,10 +42,13 @@ F = (alpha*coth(beta)-beta*coth(alpha))/(2*(alpha-beta));
 E = (coth(alpha)-coth(beta))/(2*(alpha-beta));
 
 syms n
-s1 = double(symsum((((coth(alpha)-coth(beta))/(exp(2*n*alpha)-exp(2*n*beta))) * exp(n*etta) + ...
+s1 = real(double(symsum((((coth(alpha)-coth(beta))/(exp(2*n*alpha)-exp(2*n*beta))) * exp(n*etta) + ...
     (((exp(2*n*alpha)*coth(beta)-exp(2*n*beta)*coth(alpha))/(exp(2*n*alpha)-exp(2*n*beta))) - ...
     coth(etta)) .* exp(-n*etta)) .* ...
-    cos(n*xi), n, 1, inf));
+    cos(n*xi), n, 1, inf)));
+% FIXME: using "real()" is a quick fix
+% TODO: investigate why sometimes s1 is "double complex" althogh the
+% imaginary part is zero.
 
 % non-dimensional velocity
 u = F + E*etta - 0.5*coth(etta) + s1;
