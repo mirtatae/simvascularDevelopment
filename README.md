@@ -11,6 +11,7 @@ This repository includes a set of MATLAB codes that add different functionalitie
 * [Input Files](#input-files)
   * [How to prepare inlet_coordinate.csv file](#how-to-prepare-inlet_coordinatecsv-file)
 * [Example](#example)
+* [Sample Output](#sample-output)
 * [Reference](#reference)
 ## Description 
 This pipeline maps a volumetric flow rate of interest to the inlet plane, which contains a catheter with an adjustable radius, wall thickness, and eccentricity. The pipeline's output is a boundary condition file (_bct.dat_) compatible with the software SimVascular.
@@ -75,10 +76,14 @@ inletBCT
 ```
 This will generate a _bct.dat_ file. After you "Create Data Files for Simulation" in SimVascular, you need to replace the _bct.dat_ file that is created in the simulation directory with the _bct.dat_ file that is generated using this MATLAB code. Now, you are ready to run your CFD simulation with a catheter in the inlet plane.
 
+## Sample Output
+
+<img src="https://github.com/mirtatae/simvascularDevelopment/blob/master/example/Additional%20file%202.jpg" width="400">
+
 ## Reference
 Please cite the following manuscript:
 
-Taebi, A., Berk, S., Roncali, E. Realistic boundary conditions in SimVascular through inlet catheter modeling, Under review.
+Taebi, A., Berk, S., Roncali, E. Realistic boundary conditions in SimVascular through inlet catheter modeling, Under review in _BMC Research Notes_.
 
 ## Developed In
 
