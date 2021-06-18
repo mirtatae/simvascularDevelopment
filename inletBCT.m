@@ -19,7 +19,7 @@
 % SimVascular through inlet catheter modeling, Under review.
 %
 %%
-clear
+clear all
 close all
 
 %% switches
@@ -36,7 +36,7 @@ mu = 0.004;             % fluid viscosity [use consistent units with other
                         % parameters]
 catR = 0.57/2;             % catheter radius
 catT = 0.23/2;             % catheter thickness
-ecc = 0.05;              % catheter eccentricity
+ecc = 1.5;              % catheter eccentricity
 nl = 201;               % number of time points (entered as "Point Number"
                         % in the "Set Inlet/Outlet BCs>BC Type: Prescribed 
                         % Velocities" in the SimVascular software)
@@ -48,7 +48,7 @@ catFlow = -330;         % flowrate inside the catheter
 %% setting the directory
 directory = 'example\';
 filename = 'flowrate.csv';
-filename2 = 'Patient8_inlet_coordinates_mesh2_refine.csv';
+filename2 = 'fine_mesh_refine_noExt.csv';
 
 %% rotation matrices
 syms ang integer
@@ -163,7 +163,7 @@ end
 newWallR = sqrt(newWall(1,:).^2 + newWall(2,:).^2);
 vesR = max(newWallR);
 
-if vesR - catR < ecc
+if vesR - catR < abs(ecc)
     error('Eccentricity must be smaller than the difference between vessel radius and catheter radius!')
 end
 %%
