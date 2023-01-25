@@ -81,7 +81,7 @@ This will generate a _bct.dat_ file. After you "Create Data Files for Simulation
 <img src="https://github.com/mirtatae/simvascularDevelopment/blob/master/example/Additional%20file%202.jpg" width="400">
 
 ## Reference
-Please cite the following manuscript:
+If you use any parts of this work, please appropriately cite the following manuscript:
 
 Taebi, A., Berk, S., Roncali, E. (2021). Realistic boundary conditions in SimVascular through inlet catheter modeling, _BMC Research Notes_, doi: [10.1186/s13104-021-05631-7](https://doi.org/10.1186/s13104-021-05631-7)
 
