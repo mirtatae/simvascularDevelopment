@@ -83,7 +83,7 @@ This will generate a _bct.dat_ file. After you "Create Data Files for Simulation
 ## Reference
 Please cite the following manuscript:
 
-Taebi, A., Berk, S., Roncali, E. Realistic boundary conditions in SimVascular through inlet catheter modeling, Under review in _BMC Research Notes_.
+Taebi, A., Berk, S., Roncali, E. (2021). Realistic boundary conditions in SimVascular through inlet catheter modeling, _BMC Research Notes_, doi: [10.1186/s13104-021-05631-7](https://doi.org/10.1186/s13104-021-05631-7)
 
 ## Developed In
 
